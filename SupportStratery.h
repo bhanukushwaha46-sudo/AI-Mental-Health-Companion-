@@ -1,4 +1,4 @@
-#ifndef SUPPORT_STRATEGY_H
+dur#ifndef SUPPORT_STRATEGY_H
 #define SUPPORT_STRATEGY_H
 
 #include <iostream>
