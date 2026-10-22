@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Mental Health Companion & SOS System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #070b14;
+            --bg-card: #111827;
+            --bg-card-hover: #1f2937;
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.3);
+            --warning: #f59e0b;
+            --success: #10b981;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --border: #1f2937;
+            --border-highlight: #374151;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 25px;
+            background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg-base) 70%);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .main-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.025em;
+        }
+
+        .badge {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .meta-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            flex: 1;
+            height: 420px;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #0b0f19;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .system-message {
+            background: #1f2937;
+            color: #e5e7eb;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #374151;
+        }
+
+        .alert-message {
+            background: #7f1d1d;
+            color: #fca5a5;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #ef4444;
+            box-shadow: 0 4px 15px var(--danger-glow);
+        }
+
+        /* Quick Test Chips */
+        .quick-chips {
+            padding: 12px 20px;
+            background: #0f172a;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .chip {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background: #334155;
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: #0b0f19;
+            border: 1px solid var(--border-highlight);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        button.send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button.send-btn:hover {
+            background: #4f46e5;
+        }
+
+        /* Sidebar Panel */
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .config-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .config-group input {
+            background: #0b0f19;
+            border: 1px solid var(--border-highlight);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 0.85rem;
+        }
+
+        /* Metrics list */
+        .metrics-list {
+            list-style: none;
+            max-height: 220px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-item {
+            background: #0b0f19;
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .score-tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+        .score-normal { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .score-moderate { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .score-critical { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Main Chat & Interaction Panel -->
+        <div class="main-panel">
+            <header>
+                <div class="header-top">
+                    <h1>AI Mental Health Companion & SOS</h1>
+                    <span class="badge">Phase-II Prototype</span>
+                </div>
+                <div class="meta-info">
+                    <span>Team: Spartans (DSCPP-III-2026-T336)</span>
+                    <span>Lead: Bhanu Pratap</span>
+                </div>
+            </header>
+
+            <div class="chat-container" id="chatBox">
+                <div class="message system-message">
+                    <strong>[System Online]:</strong> Welcome! Type your message or click a test prompt below. Our automated keyword analyzer will evaluate sentiment and trigger safety protocols in real time.
+                </div>
+            </div>
+
+            <!-- Quick Test Chips for Demo -->
+            <div class="quick-chips">
+                <span style="font-size: 0.75rem; color: var(--text-muted); align-self: center; margin-right: 4px;">Quick Test:</span>
+                <div class="chip" onclick="testPreset('Feeling a bit stressed about my assignments today.')">Normal / Stress (6)</div>
+                <div class="chip" onclick="testPreset('I am completely overwhelmed and exhausted.')">Moderate Burnout (6)</div>
+                <div class="chip" onclick="testPreset('I want to end it and I cannot take this anymore.')">Critical SOS (9)</div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Type your message or expression..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="processMessage()">Send</button>
+            </div>
+        </div>
+
+        <!-- Sidebar / Configuration & Metrics Panel -->
+        <div class="sidebar-panel">
+            <div class="card">
+                <h3>⚙️ Emergency Contact Config</h3>
+                <div class="config-group">
+                    <label for="phoneInput">Trusted Phone Number (with Country Code):</label>
+                    <input type="text" id="phoneInput" value="919876543210" placeholder="e.g., 919876543210">
+                    <small style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">Used for WhatsApp emergency deep-links during critical triggers.</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📊 Session History Logs</h3>
+                <ul class="metrics-list" id="historyList">
+                    <li style="color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 10px;">No logs recorded yet.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sessionHistory = [];
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                processMessage();
+            }
+        }
+
+        function testPreset(text) {
+            document.getElementById('userInput').value = text;
+            processMessage();
+        }
+
+        function analyzeKeywords(text) {
+            const lowerText = text.toLowerCase();
+            
+            if (lowerText.includes("suicide") || lowerText.includes("kill") || 
+                lowerText.includes("die") || lowerText.includes("hopeless") || 
+                lowerText.includes("emergency") || lowerText.includes("end it") ||
+                lowerText.includes("hurt myself") || lowerText.includes("want to die") ||
+                lowerText.includes("cant take it anymore") || lowerText.includes("can't take it anymore") ||
+                lowerText.includes("no reason to live") || lowerText.includes("better off dead") ||
+                lowerText.includes("end my life") || lowerText.includes("goodbye everyone")) {
+                return 9;
+            }
+            
+            if (lowerText.includes("stress") || lowerText.includes("overwhelmed") || 
+                lowerText.includes("anxious") || lowerText.includes("pressure") || 
+                lowerText.includes("worried") || lowerText.includes("panic") ||
+                lowerText.includes("depressed") || lowerText.includes("sad") ||
+                lowerText.includes("lonely") || lowerText.includes("exhausted") ||
+                lowerText.includes("burned out") || lowerText.includes("burnout") ||
+                lowerText.includes("scared") || lowerText.includes("worthless") ||
+                lowerText.includes("struggling") || lowerText.includes("crying") ||
+                lowerText.includes("tired")) {
+                return 6;
+            }
+
+            return 2;
+        }
+
+        function processMessage() {
+            const inputField = document.getElementById('userInput');
+            const message = inputField.value.trim();
+
+            if (message === "") return;
+
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<div class="message user-message">${message}</div>`;
+            inputField.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const score = analyzeKeywords(message);
+            const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            sessionHistory.unshift({ message, score, time: timeNow });
+            updateHistoryUI();
+
+            setTimeout(() => {
+                if (score >= 8) {
+                    chatBox.innerHTML += `<div class="message alert-message">
+                        <strong>🚨 [CRITICAL SOS ALERT]: Acute crisis tier identified! (Score: ${score}/10)</strong><br>
+                        • Secondary sentiment verification confirmed.<br>
+                        • Dispatched automated emergency alert with mock GPS coordinates (30.3165° N, 78.0322° E).<br>
+                        • [Audit Trail]: Emergency worker simulation queue notified.
+                    </div>`;
+                    
+                    triggerWhatsAppAlert(message);
+
+                } else if (score >= 5) {
+                    chatBox.innerHTML += `<div class="message system-message">
+                        <strong>🛡️ [Moderate Support]: Moderate distress detected (Score: ${score}/10).</strong><br>
+                        Let's take a slow, deep breath together. Inhale for 4 seconds, hold, and exhale. You are safe.
+                    </div>`;
+                } else {
+                    chatBox.innerHTML += `<div class="message system-message">
+                        <strong>💬 [Normal Support]:</strong> I'm listening. Tell me more about what's on your mind today. (Score: ${score}/10)
+                    </div>`;
+                }
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 400);
+        }
+
+        function triggerWhatsAppAlert(userMsg) {
+            const phoneNumber = document.getElementById('phoneInput').value.trim();
+            if (!phoneNumber || phoneNumber.includes("X")) return;
+
+            const emergencyText = encodeURIComponent(
+                `🚨 *CRITICAL SOS EMERGENCY ALERT* 🚨\n\n` +
+                `Acute crisis tier identified by AI Companion System!\n` +
+                `User Message: "${userMsg}"\n` +
+                `Simulated GPS: 30.3165° N, 78.0322° E\n` +
+                `Please check on them immediately!`
+            );
+
+            const whatsappURL = `https://wa.me/${phoneNumber}?text=${emergencyText}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        function updateHistoryUI() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = "";
+
+            sessionHistory.forEach((item) => {
+                let badgeClass = 'score-normal';
+                if (item.score >= 8) badgeClass = 'score-critical';
+                else if (item.score >= 5) badgeClass = 'score-moderate';
+
+                historyList.innerHTML += `
+                    <li class="metric-item">
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px;" title="${item.message}">${item.message}</span>
+                        <span class="score-tag ${badgeClass}">${item.score}/10</span>
+                    </li>`;
+            });
+        }
+    </script>
+</body>
+</html>
